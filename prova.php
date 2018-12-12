@@ -16,4 +16,3 @@ $base = __DIR__;
     echo "Error insertant";  // Error per l'usuari
     error_log($res->missatge,3,"$base/log/errors.log");  // Error per noltros
  }   
-
