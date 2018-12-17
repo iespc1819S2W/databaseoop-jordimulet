@@ -32,7 +32,8 @@ class Autor {
     public function get($id) {
         try {
             $result = array();
-            $stm = $this->conn->prepare("SELECT id_aut,nom_aut,fk_nacionalitat FROM AUTORS WHERE ID_AUT = $id ORDER BY id_aut");
+            $stm = $this->conn->prepare("SELECT id_aut,nom_aut,fk_nacionalitat FROM AUTORS WHERE ID_AUT = :id_aut ORDER BY id_aut");
+            $stm->bindValue(':id_aut', $id);
             $stm->execute();
             $tuples = $stm->fetch();
             $this->resposta->setDades($tuples);    // array de tuples
@@ -96,12 +97,12 @@ class Autor {
 
     public function delete($id) {
         try {
-            $sql = "DELETE FROM `AUTORS` WHERE ID_AUT=$id";
-
+            $sql = "DELETE FROM `AUTORS` WHERE ID_AUT=:id_aut";
+            
             $stm = $this->conn->prepare($sql);
+            $stm->bindValue(':id_aut', $id);
             $stm->execute();
             $this->resposta->setCorrecta(true);
-            echo $sql;
             return $this->resposta;
         } catch (Exception $ex) {
             $this->resposta->setCorrecta(false, "Error eliminant: " . $e->getMessage());
@@ -111,6 +112,7 @@ class Autor {
 
     public function filtra($where, $orderby, $offset, $count) {
         try {
+            $where = (!empty($where) ? "WHERE ".$where : "");
             $orderby = (!empty($orderby) ? $orderby : "id_aut");
             $offset = (!empty($offset) ? $offset : "0");
             $count = (!empty($count) ? $count : "20");
